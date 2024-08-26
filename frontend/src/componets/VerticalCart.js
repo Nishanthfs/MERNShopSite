@@ -1,0 +1,75 @@
+import React, { useContext } from 'react'
+import scrollTop from '../Nhelpers/scrollTop'
+import displayINRCurrency from '../Nhelpers/DisplayCurrency'
+import Context from '../context'
+import addToCart from '../Nhelpers/addToCart'
+import { Link } from 'react-router-dom'
+
+const VerticalCart = ({loading,data = []}) => {
+    const loadingList = new Array(13).fill(null)
+    const {fetchUserAddToCart}=useContext(Context)
+
+    const handleAddToCart = async(e,id)=>{
+       await addToCart(e,id)
+       fetchUserAddToCart()
+    }
+    
+  return (
+    <div className='grid grid-cols-[repeat(auto-fit,minmax(260px,300px))] justify-center gap-4 md:justify-between md:gap-3 overflow-x-scroll scrollbar-none transition-all'> 
+
+    {  
+         loading ? (
+           loadingList.map((product,index)=>{
+             return(
+                 <div className='w-full min-w-[280px]  md:min-w-[320px] max-w-[280px] md:max-w-[320px] bg-white rounded-sm shadow'>
+                    <div className='bg-slate-200 h-48 p-4  min-w-[280px] md:min-w-[145] flex justify-center items-center animate-pulse'>
+                       
+                    </div>
+                  <div className='p-4 grid gap-3'>
+                    <h2 className='font-semibold text-base md:text-lg line-clamp-1 text-black p-1 py-2 animate-pulse bg-slate-200 w-full'></h2>
+                    <p className='capitalize  bg-slate-200 p-1 py-2 rounded'></p>
+                    <div className='flex gap-2'>
+                     <p className='text-red-600 font-medium p-1 bg-slate-200 w-full py-2 rounded'></p>
+                     <p className='text-slate-200 line-through p-1 bg-slate-200 w-full py2 rounded'></p>
+                    </div>
+                    <button className='text-sm  text-white mt-2 p-1 w-36 rounded-full bg-slate-200 py-3 animate-bounce'></button>
+
+                 </div>   
+       
+               </div>
+
+             )
+         })
+        
+       ):(
+         data.map((product,index)=>{
+           return(
+               <Link to={"/product/"+product?._id} className='min-w-[280px]  md:min-w-[300px] max-w-[280px] md:max-w-[300px] bg-white rounded-sm shadow'onClick={scrollTop}>
+                  <div className='bg-slate-200 h-48 p-4  min-w-[280px] md:min-w-[145] flex justify-center items-center'>
+                     <img src={product?.productImage[0]} className='object-scale-down mix-blend-multiply h-full hover:scale-110 transition-all w-fit'/>
+                  </div>
+                <div className='p-4 grid gap-1'>
+                  <h2 className='font-semibold text-base md:text-lg line-clamp-1 text-black'>{product?.productName}</h2>
+                  <p className='capitalize'>{product?.category}</p>
+                  <div className='flex gap-2'>
+                   <p className='text-red-600 font-medium '>{displayINRCurrency(product?.sellingPrice)}</p>
+                   <p className='text-slate-200 line-through '>{displayINRCurrency(product?.price)}</p>
+                  </div>
+                  <button className='text-sm bg-red-600 hover:bg-red-700 text-white mt-2 p-1 w-36 rounded-full'onClick={(e)=>handleAddToCart(e,product?._id)}>Add to Cart</button>
+
+               </div>   
+     
+             </Link>
+
+           )
+
+       })
+
+       )
+  
+    }
+</div>
+  )
+}
+
+export default VerticalCart
